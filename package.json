@@ -1,0 +1,44 @@
+{
+  "name": "fastify-trpc-vuejs-template",
+  "version": "1.0.0",
+  "private": true,
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "npm run clean && npm run build-client && npm run build-server",
+    "build-client": "vue-tsc -p client --noEmit && vite build",
+    "build-server": "vite build --outDir build --ssr src/server.ts",
+    "clean": "rm -rf build",
+    "start": "node build/server.js",
+    "start-prod": "cross-env NODE_ENV=production npm start",
+    "heroku-postbuild": "npm run build",
+    "dev": "concurrently \"npm:dev-*\"",
+    "dev-client": "vite --config vite.config.client.ts",
+    "dev-server": "vite --config vite.config.server.ts",
+    "test": "vitest",
+    "coverage": "vitest --coverage"
+  },
+  "engines": {
+    "node": ">=17.0.0",
+    "npm": ">=8.0.0"
+  },
+  "license": "ISC",
+  "dependencies": {
+    "@fastify/cors": "^8.0.0",
+    "@fastify/helmet": "^9.1.0",
+    "@types/node": "^18.0.1",
+    "@vitejs/plugin-vue": "^2.3.3",
+    "cross-env": "^7.0.3",
+    "fastify": "^4.2.0",
+    "pino-pretty": "^8.1.0",
+    "typescript": "^4.7.4",
+    "vite": "^2.9.13",
+    "vite-plugin-node": "^1.0.0",
+    "vue": "^3.2.37",
+    "vue-router": "^4.0.16"
+  },
+  "devDependencies": {
+    "concurrently": "^7.2.2",
+    "vitest": "^0.17.0"
+  }
+}
