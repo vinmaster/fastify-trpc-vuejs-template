@@ -4,8 +4,9 @@ import vue from '@vitejs/plugin-vue';
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [vue()],
-  root: 'client',
+  root: './src/client',
   build: {
     outDir: '../build/public',
   },
+  clearScreen: false,
 });

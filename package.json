@@ -26,6 +26,9 @@
   "dependencies": {
     "@fastify/cors": "^8.0.0",
     "@fastify/helmet": "^9.1.0",
+    "@fastify/websocket": "^6.0.1",
+    "@trpc/client": "^9.25.3",
+    "@trpc/server": "^9.25.3",
     "@types/node": "^18.0.1",
     "@vitejs/plugin-vue": "^2.3.3",
     "cross-env": "^7.0.3",
@@ -35,7 +38,8 @@
     "vite": "^2.9.13",
     "vite-plugin-node": "^1.0.0",
     "vue": "^3.2.37",
-    "vue-router": "^4.0.16"
+    "vue-router": "^4.0.16",
+    "zod": "^3.17.3"
   },
   "devDependencies": {
     "concurrently": "^7.2.2",

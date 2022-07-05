@@ -1,6 +1,11 @@
 import fastify from './app';
 import logger from './logger';
 
+process.on('unhandledRejection', e => {
+  console.error(e);
+  process.exit(1);
+});
+
 const app = fastify({
   logger,
   pluginTimeout: 50000,

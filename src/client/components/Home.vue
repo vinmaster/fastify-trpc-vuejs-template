@@ -1,5 +1,20 @@
 <script setup lang="ts">
 import { ref } from 'vue'
+import { createTRPCClient } from '@trpc/client';
+import type { AppRouter } from '../../server/router';
+
+const client = createTRPCClient<AppRouter>({
+  url: 'http://localhost:8000/trpc',
+});
+
+const bilbo = await client.query('getUserById', 'id_bilbo');
+console.log(bilbo);
+// => { id: 'id_bilbo', name: 'Bilbo' };
+
+const frodo = await client.mutation('createUser', { name: 'Frodo' });
+console.log(frodo);
+// => { id: 'id_frodo', name: 'Frodo' };
+
 const count = ref(0)
 </script>
 
