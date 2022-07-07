@@ -6,7 +6,7 @@
     <ul class="navbar-brand">
       <li class="navbar-item">
         <router-link to="/">
-          <img alt="Vue Logo" src="./assets/logo.png" width="40" />
+          Home
         </router-link>
       </li>
     </ul>

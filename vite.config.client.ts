@@ -6,7 +6,8 @@ export default defineConfig({
   plugins: [vue()],
   root: './src/client',
   build: {
-    outDir: '../build/public',
+    outDir: '../../build/public',
+    emptyOutDir: false,
   },
   clearScreen: false,
 });

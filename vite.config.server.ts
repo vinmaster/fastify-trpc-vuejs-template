@@ -37,4 +37,8 @@ export default defineConfig({
     },
   },
   clearScreen: false,
+  build: {
+    outDir: 'build',
+    emptyOutDir: false,
+  },
 });

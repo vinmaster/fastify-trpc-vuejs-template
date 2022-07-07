@@ -2,7 +2,10 @@ import { inferAsyncReturnType } from '@trpc/server';
 import { CreateFastifyContextOptions } from '@trpc/server/adapters/fastify';
 
 export function createContext({ req, res }: CreateFastifyContextOptions) {
-  const user = { name: req.headers.username ?? 'anonymous' };
+  const user = { name: 'anonymous' };
+  if (req.headers.authorization) {
+    return { req, res, user: { name: req.headers.authorization } };
+  }
 
   return { req, res, user };
 }

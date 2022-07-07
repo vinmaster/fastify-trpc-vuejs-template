@@ -1,21 +1,25 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue';
 import { createTRPCClient } from '@trpc/client';
+import superjson from 'superjson';
 import type { AppRouter } from '../../server/router';
 
 const client = createTRPCClient<AppRouter>({
   url: 'http://localhost:8000/trpc',
+  transformer: superjson,
 });
 
-const bilbo = await client.query('getUserById', 'id_bilbo');
-console.log(bilbo);
-// => { id: 'id_bilbo', name: 'Bilbo' };
+onMounted(async () => {
+  const bilbo = await client.query('getUserByName', 'id_bilbo');
+  console.log(bilbo);
+  // => { id: 'id_bilbo', name: 'Bilbo' };
 
-const frodo = await client.mutation('createUser', { name: 'Frodo' });
-console.log(frodo);
-// => { id: 'id_frodo', name: 'Frodo' };
+  const frodo = await client.mutation('createUser', { name: 'Frodo' });
+  console.log(frodo);
+  // => { id: 'id_frodo', name: 'Frodo' };
+});
 
-const count = ref(0)
+const count = ref(0);
 </script>
 
 <template>
@@ -31,10 +35,12 @@ const count = ref(0)
 a {
   color: #42b983;
 }
+
 label {
   margin: 0 0.5em;
   font-weight: bold;
 }
+
 code {
   background-color: #eee;
   padding: 2px 4px;
