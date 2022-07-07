@@ -29,7 +29,7 @@ const createRouter = () => {
 
 const authMiddleware = async ({ ctx, next, meta }: any) => {
   if (meta?.auth && !ctx.user) {
-    throw new TRPCError({ code: 'UNAUTHORIZED' });
+    throw new TRPCError({ code: 'UNAUTHORIZED', cause: 'cause' });
   }
   return next({
     ctx: {
@@ -43,17 +43,17 @@ const userRoutes = createRouter()
   .query('getUserByName', {
     input: z.string(),
     async resolve({ input }) {
-      return users[input]; // input type is string
+      return users[input];
     },
   })
   .mutation('createUser', {
-    // validate input with Zod
     input: z.object({
       name: z.string().min(3),
       bio: z.string().max(142).optional(),
     }),
     async resolve({ input }) {
-      const user: User = { ...input };
+      if (!input.name) throw new TRPCError({ code: 'BAD_REQUEST', cause: 'cause' });
+      const user: User = input as User;
       users[user.name] = user;
       return user;
     },
@@ -67,7 +67,7 @@ const adminRoutes = createRouter()
     },
   });
 
-export const appRouter = createRouter().merge('user', userRoutes).merge('admin', adminRoutes);
+export const appRouter = createRouter().merge('user.', userRoutes).merge('admin.', adminRoutes);
 
 // export type definition of API
 export type AppRouter = typeof appRouter;

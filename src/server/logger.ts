@@ -8,7 +8,7 @@ if (!fs.existsSync(logDir)) {
 }
 
 // Set logger options
-const logger = import.meta.env.DEV
+const logger = process.env.DEVELOPMENT
   ? {
       transport: {
         target: 'pino-pretty',

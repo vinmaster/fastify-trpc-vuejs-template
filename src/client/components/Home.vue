@@ -10,20 +10,18 @@ const client = createTRPCClient<AppRouter>({
 });
 
 onMounted(async () => {
-  const bilbo = await client.query('getUserByName', 'id_bilbo');
-  console.log(bilbo);
-  // => { id: 'id_bilbo', name: 'Bilbo' };
-
-  const frodo = await client.mutation('createUser', { name: 'Frodo' });
+  const frodo = await client.mutation('user.createUser', { name: 'Frodo' });
   console.log(frodo);
-  // => { id: 'id_frodo', name: 'Frodo' };
+
+  const res = await client.query('user.getUserByName', 'Frodo');
+  console.log(res);
 });
 
 const count = ref(0);
 </script>
 
 <template>
-  <h1 class="has-text-centered is-size-1">Express Vuejs Template</h1>
+  <h1 class="has-text-centered is-size-1">Fastify Template</h1>
 
   <div class="container is-flex is-justify-content-center mb-2">
     <div class="mr-2">Counter</div>

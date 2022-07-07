@@ -7,15 +7,15 @@
   "scripts": {
     "build": "npm run clean && npm run build-client && npm run build-server",
     "build-client": "vite build --config vite.config.client.ts --ssrManifest",
-    "build-client2": "vue-tsc -p client --noEmit && vite build",
-    "build-server": "vite build --config vite.config.server.ts --ssr",
+    "build-server": "tsc --build tsconfig.server.json",
     "clean": "rm -rf build",
     "start": "node build/index.js",
     "start-prod": "cross-env NODE_ENV=production npm start",
     "heroku-postbuild": "npm run build",
     "dev": "concurrently \"npm:dev-*\"",
     "dev-client": "vite --config vite.config.client.ts",
-    "dev-server": "vite --config vite.config.server.ts",
+    "dev-server": "cross-env NODE_ENV=development ts-node-dev --project tsconfig.server.json --respawn ./src/server/index.ts",
+    "bak-dev-server": "cross-env NODE_ENV=development ts-node-dev --project tsconfig.server.json --respawn --transpile-only ./src/server/index.ts",
     "test": "vitest",
     "coverage": "vitest --coverage"
   },
@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "concurrently": "^7.2.2",
+    "ts-node-dev": "^2.0.0",
     "vitest": "^0.17.0"
   }
 }
