@@ -45,6 +45,7 @@
     "zod": "^3.17.3"
   },
   "devDependencies": {
+    "c8": "^7.11.3",
     "concurrently": "^7.2.2",
     "ts-node-dev": "^2.0.0",
     "vitest": "^0.17.0"

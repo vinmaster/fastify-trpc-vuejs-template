@@ -39,6 +39,8 @@ const authMiddleware = async ({ ctx, next, meta }: any) => {
   });
 };
 
+const createProtectedRouter = () => createRouter().middleware(authMiddleware);
+
 const userRoutes = createRouter()
   .query('getUserByName', {
     input: z.string(),
@@ -59,13 +61,11 @@ const userRoutes = createRouter()
     },
   });
 
-const adminRoutes = createRouter()
-  .middleware(authMiddleware)
-  .query('protected', {
-    async resolve(req) {
-      return 'ok';
-    },
-  });
+const adminRoutes = createProtectedRouter().query('protected', {
+  async resolve(req) {
+    return 'ok';
+  },
+});
 
 export const appRouter = createRouter().merge('user.', userRoutes).merge('admin.', adminRoutes);
 
