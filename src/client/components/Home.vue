@@ -4,17 +4,22 @@ import { createTRPCClient } from '@trpc/client';
 import superjson from 'superjson';
 import type { AppRouter } from '../../server/router';
 
+const url = import.meta.env.DEV ? 'http://localhost:8000' : window.location.origin;
 const client = createTRPCClient<AppRouter>({
-  url: 'http://localhost:8000/trpc',
+  url: `${url}/trpc`,
   transformer: superjson,
 });
 
 onMounted(async () => {
-  const frodo = await client.mutation('user.createUser', { name: 'Frodo' });
-  console.log(frodo);
+  try {
+    const frodo = await client.mutation('user.createUser', { name: 'Frodo' });
+    console.log(frodo);
 
-  const res = await client.query('user.getUserByName', 'Frodo');
-  console.log(res);
+    const res = await client.query('user.getUserByName', 'Frodo');
+    console.log(res);
+  } catch (error) {
+    console.error(error);
+  }
 });
 
 const count = ref(0);
