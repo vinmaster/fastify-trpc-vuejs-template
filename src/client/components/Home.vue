@@ -1,23 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
-import { createTRPCClient } from '@trpc/client';
-import { createWSClient, wsLink } from '@trpc/client/links/wsLink';
-import superjson from 'superjson';
-import type { AppRouter } from '../../server/routes/trpc';
-
-const url = import.meta.env.DEV ? 'http://localhost:8000' : window.location.origin;
-const wsClient = createWSClient({
-  url: `ws://localhost:8000/trpc`,
-});
-const client = createTRPCClient<AppRouter>({
-  url: `${url}/trpc`,
-  transformer: superjson,
-  links: [
-    wsLink({
-      client: wsClient,
-    }),
-  ],
-});
+import { client } from '../lib/trpc';
 
 onMounted(async () => {
   try {
@@ -38,10 +21,10 @@ onMounted(async () => {
       }
     });
 
-    const frodo = await client.mutation('user.createUser', { name: 'Frodo' });
+    const frodo = await client.mutation('user.createUser', { username: 'Frodo', password: 'password' });
     console.log(frodo);
 
-    const res = await client.query('user.getUserByName', 'Frodo');
+    const res = await client.query('user.getUserByUsername', 'Frodo');
     console.log(res);
   } catch (error) {
     console.error(error);
@@ -52,11 +35,24 @@ const count = ref(0);
 </script>
 
 <template>
-  <h1 class="has-text-centered is-size-1">Fastify Template</h1>
+  <div class="hero bg-base-200">
+    <div class="hero-content text-center">
+      <div class="max-w-md">
+        <h1 class="text-5xl font-bold">Fastify Template</h1>
+        <p class="py-6">This is home page.</p>
 
-  <div class="container is-flex is-justify-content-center mb-2">
-    <div class="mr-2">Counter</div>
-    <button type="button" @click="count++">count is: {{ count }}</button>
+        <div class="card w-96 bg-base-100 shadow-xl">
+          <figure><img src="https://placeimg.com/400/225/arch" /></figure>
+          <div class="card-body">
+            <h2 class="card-title">Counter Example</h2>
+            <p>Click on buttons below</p>
+            <div class="card-actions justify-end">
+              <button type="button" class="btn btn-primary" @click="count++">count is: {{ count }}</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 

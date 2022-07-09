@@ -6,10 +6,11 @@ it('add and get user', async () => {
   const caller = appRouter.createCaller({} as any);
 
   const input: inferMutationInput<'user.createUser'> = {
-    name: 'test name',
+    username: 'test name',
+    password: 'test pass',
   };
   const user = await caller.mutation('user.createUser', input);
-  const byId = await caller.query('user.getUserByName', input.name);
+  const byId = await caller.query('user.getUserByUsername', input.username);
 
   expect(byId).toMatchObject(input);
 });

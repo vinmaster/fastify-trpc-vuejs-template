@@ -3,14 +3,8 @@ import * as trpc from '@trpc/server';
 import { z } from 'zod';
 import superjson from 'superjson';
 import { Subscription, TRPCError } from '@trpc/server';
-import { FastifyError, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+import { User, users, UserSchema } from '../data/data';
 // import { wsRoutes } from './ws';
-
-type User = {
-  name: string;
-  bio?: string;
-};
-const users: Record<string, User> = {};
 
 const createRouter = () => trpc.router<Context>();
 
@@ -29,22 +23,32 @@ const authMiddleware = async ({ ctx, next, meta }: any) => {
 const createProtectedRouter = () => createRouter().middleware(authMiddleware);
 
 const userRoutes = createRouter()
-  .query('getUserByName', {
+  .query('getUserByUsername', {
     input: z.string(),
     async resolve({ input }) {
       return users[input];
     },
   })
   .mutation('createUser', {
+    input: UserSchema,
+    async resolve({ input }) {
+      if (!input.username) throw new TRPCError({ code: 'BAD_REQUEST' });
+      const user: User = input as User;
+      users[user.username] = user;
+      return user;
+    },
+  })
+  .mutation('login', {
     input: z.object({
-      name: z.string().min(3),
-      bio: z.string().max(142).optional(),
+      username: z.string(),
+      password: z.string(),
     }),
     async resolve({ input }) {
-      if (!input.name) throw new TRPCError({ code: 'BAD_REQUEST', cause: 'cause' });
-      const user: User = input as User;
-      users[user.name] = user;
-      return user;
+      let user = users.get(input.username);
+      if (!user || user.password != input.password) throw new TRPCError({ code: 'BAD_REQUEST' });
+
+      user.lastLoggedInAt = new Date();
+      return 'success';
     },
   });
 
