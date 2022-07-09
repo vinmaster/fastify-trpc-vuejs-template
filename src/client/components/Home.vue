@@ -1,19 +1,43 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { createTRPCClient } from '@trpc/client';
+import { createWSClient, wsLink } from '@trpc/client/links/wsLink';
 import superjson from 'superjson';
-import type { AppRouter } from '../../server/router';
+import type { AppRouter } from '../../server/routes/trpc';
 
 const url = import.meta.env.DEV ? 'http://localhost:8000' : window.location.origin;
+const wsClient = createWSClient({
+  url: `ws://localhost:8000/trpc`,
+});
 const client = createTRPCClient<AppRouter>({
   url: `${url}/trpc`,
   transformer: superjson,
+  links: [
+    wsLink({
+      client: wsClient,
+    }),
+  ],
 });
 
 onMounted(async () => {
   try {
     console.log('mounted');
-    
+
+    client.subscription('ws.date', undefined, {
+      onDone() {
+        console.log('onDone');
+      },
+      onNext(result) {
+        if (result.type === 'data') {
+          console.log('onNext', result.data);
+        } else {
+          console.log('onNext', result);
+        }
+      }, onError(error) {
+        console.error('onError', error);
+      }
+    });
+
     const frodo = await client.mutation('user.createUser', { name: 'Frodo' });
     console.log(frodo);
 

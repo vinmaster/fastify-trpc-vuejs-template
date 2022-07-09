@@ -1,5 +1,5 @@
 import fastify from './app';
-import logger from './logger';
+import logger from './lib/logger';
 
 process.on('unhandledRejection', e => {
   console.error(e);

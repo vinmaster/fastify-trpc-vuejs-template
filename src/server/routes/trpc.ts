@@ -1,27 +1,18 @@
-import { Context } from './context';
+import { Context } from '../lib/context';
 import * as trpc from '@trpc/server';
 import { z } from 'zod';
 import superjson from 'superjson';
-import { TRPCError } from '@trpc/server';
-import { FastifyInstance } from 'fastify';
+import { Subscription, TRPCError } from '@trpc/server';
+import { FastifyError, FastifyInstance, FastifyReply, FastifyRequest } from 'fastify';
+// import { wsRoutes } from './ws';
 
 type User = {
   name: string;
   bio?: string;
 };
-
 const users: Record<string, User> = {};
 
-export function apiRoutes(fastify: FastifyInstance, opts, done) {
-  fastify.get('/date', function (request, reply) {
-    reply.send({ date: new Date() });
-  });
-  done();
-}
-
-const createRouter = () => {
-  return trpc.router<Context>().transformer(superjson);
-};
+const createRouter = () => trpc.router<Context>();
 
 const authMiddleware = async ({ ctx, next, meta }: any) => {
   if (meta?.auth && !ctx.user) {
@@ -63,7 +54,33 @@ const adminRoutes = createProtectedRouter().query('protected', {
   },
 });
 
+const wsRoutes = createRouter()
+  .subscription('randomNumber', {
+    resolve() {
+      return new Subscription<{ randomNumber: number }>(emit => {
+        const timer = setInterval(() => {
+          emit.data({ randomNumber: Math.random() });
+        }, 10000);
+        return () => {
+          console.log('ws closed');
+          clearInterval(timer);
+        };
+      });
+    },
+  })
+  .subscription('date', {
+    resolve() {
+      return new Subscription<{ date: Date }>(emit => {
+        emit.data({ date: new Date() });
+        return () => {
+          console.log('date closed');
+        };
+      });
+    },
+  });
+
 export const appRouter = createRouter()
+  .transformer(superjson)
   .middleware(async ({ path, type, next }) => {
     let start = Date.now();
     let result = await next();
@@ -75,7 +92,8 @@ export const appRouter = createRouter()
     return result;
   })
   .merge('user.', userRoutes)
-  .merge('admin.', adminRoutes);
+  .merge('admin.', adminRoutes)
+  .merge('ws.', wsRoutes);
 
 // export type definition of API
 export type AppRouter = typeof appRouter;

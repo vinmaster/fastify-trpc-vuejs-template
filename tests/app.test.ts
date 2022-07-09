@@ -1,5 +1,5 @@
-import { appRouter } from '../src/server/router';
-import { inferMutationInput } from '../src/server/types';
+import { appRouter } from '../src/server/routes/trpc';
+import { inferMutationInput } from '../src/server/lib/types';
 import { describe, it, expect } from 'vitest';
 
 it('add and get user', async () => {
