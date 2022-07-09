@@ -19,3 +19,11 @@ export type inferMutationOutput<TRouteKey extends keyof AppRouter['_def']['mutat
 
 export type inferMutationInput<TRouteKey extends keyof AppRouter['_def']['mutations']> =
   inferProcedureInput<AppRouter['_def']['mutations'][TRouteKey]>;
+
+declare module 'fastify' {
+  interface FastifyInstance {
+    config: {
+      JWT_SECRET: string;
+    };
+  }
+}

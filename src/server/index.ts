@@ -6,20 +6,23 @@ process.on('unhandledRejection', e => {
   process.exit(1);
 });
 
-const app = fastify({
-  logger,
-  pluginTimeout: 50000,
-  bodyLimit: 15485760,
-});
+async function startServer() {
+  try {
+    const app = fastify({
+      logger,
+      pluginTimeout: 50000,
+      bodyLimit: 15485760,
+    });
+    await app.ready();
 
-try {
-  const PORT = parseInt(process.env.PORT || '8000', 10);
+    const PORT = parseInt(process.env.PORT || '8000', 10);
 
-  app.listen({ port: PORT, host: '0.0.0.0' });
-  console.log(`Server started on 0.0.0.0:${PORT}`);
-} catch (err) {
-  app.log.error(err);
-  process.exit(1);
+    await app.listen({ port: PORT, host: '0.0.0.0' });
+    console.log(`Server started on 0.0.0.0:${PORT}`);
+  } catch (err) {
+    console.error(err);
+    process.exit(1);
+  }
 }
 
-export const viteNodeApp = app;
+startServer();

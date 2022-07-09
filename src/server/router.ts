@@ -3,6 +3,7 @@ import * as trpc from '@trpc/server';
 import { z } from 'zod';
 import superjson from 'superjson';
 import { TRPCError } from '@trpc/server';
+import { FastifyInstance } from 'fastify';
 
 type User = {
   name: string;
@@ -11,20 +12,15 @@ type User = {
 
 const users: Record<string, User> = {};
 
-const createRouter = () => {
-  return trpc
-    .router<Context>()
-    .middleware(async ({ path, type, next }) => {
-      let start = Date.now();
-      let result = await next();
-      let duration = Date.now() - start;
-      result.ok
-        ? console.log('OK', { path, type, duration })
-        : console.log('Non-OK', { path, type, duration });
+export function apiRoutes(fastify: FastifyInstance, opts, done) {
+  fastify.get('/date', function (request, reply) {
+    reply.send({ date: new Date() });
+  });
+  done();
+}
 
-      return result;
-    })
-    .transformer(superjson);
+const createRouter = () => {
+  return trpc.router<Context>().transformer(superjson);
 };
 
 const authMiddleware = async ({ ctx, next, meta }: any) => {
@@ -67,7 +63,19 @@ const adminRoutes = createProtectedRouter().query('protected', {
   },
 });
 
-export const appRouter = createRouter().merge('user.', userRoutes).merge('admin.', adminRoutes);
+export const appRouter = createRouter()
+  .middleware(async ({ path, type, next }) => {
+    let start = Date.now();
+    let result = await next();
+    let duration = Date.now() - start;
+    result.ok
+      ? console.log('OK', { path, type, duration })
+      : console.log('Non-OK', { path, type, duration });
+
+    return result;
+  })
+  .merge('user.', userRoutes)
+  .merge('admin.', adminRoutes);
 
 // export type definition of API
 export type AppRouter = typeof appRouter;

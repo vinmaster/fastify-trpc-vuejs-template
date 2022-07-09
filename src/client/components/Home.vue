@@ -12,6 +12,8 @@ const client = createTRPCClient<AppRouter>({
 
 onMounted(async () => {
   try {
+    console.log('mounted');
+    
     const frodo = await client.mutation('user.createUser', { name: 'Frodo' });
     console.log(frodo);
 
