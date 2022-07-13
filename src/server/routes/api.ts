@@ -10,6 +10,10 @@ export function apiRoutes(fastify: FastifyInstance, opts, done) {
     return { hello: 'world' };
   });
 
+  fastify.get('/info', async (request, reply) => {
+    return { id: request.id };
+  });
+
   fastify.get('/error', async (request, reply) => {
     throw new Error('test');
   });

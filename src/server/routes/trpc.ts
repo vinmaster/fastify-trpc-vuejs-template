@@ -1,12 +1,10 @@
-import { Context } from '../lib/context';
-import * as trpc from '@trpc/server';
+import { createRouter } from '../lib/context';
 import { z } from 'zod';
 import superjson from 'superjson';
-import { Subscription, TRPCError } from '@trpc/server';
+import { TRPCError } from '@trpc/server';
 import { User, users, UserSchema } from '../data/data';
+import { wsRoutes } from './ws';
 // import { wsRoutes } from './ws';
-
-const createRouter = () => trpc.router<Context>();
 
 const authMiddleware = async ({ ctx, next, meta }: any) => {
   if (meta?.auth && !ctx.user) {
@@ -31,7 +29,7 @@ const userRoutes = createRouter()
   })
   .mutation('createUser', {
     input: UserSchema,
-    async resolve({ input }) {
+    async resolve({ input, ctx }) {
       if (!input.username) throw new TRPCError({ code: 'BAD_REQUEST' });
       const user: User = input as User;
       users[user.username] = user;
@@ -43,7 +41,7 @@ const userRoutes = createRouter()
       username: z.string(),
       password: z.string(),
     }),
-    async resolve({ input }) {
+    async resolve({ input, ctx }) {
       let user = users.get(input.username);
       if (!user || user.password != input.password) throw new TRPCError({ code: 'BAD_REQUEST' });
 
@@ -57,31 +55,6 @@ const adminRoutes = createProtectedRouter().query('protected', {
     return 'ok';
   },
 });
-
-const wsRoutes = createRouter()
-  .subscription('randomNumber', {
-    resolve() {
-      return new Subscription<{ randomNumber: number }>(emit => {
-        const timer = setInterval(() => {
-          emit.data({ randomNumber: Math.random() });
-        }, 10000);
-        return () => {
-          console.log('ws closed');
-          clearInterval(timer);
-        };
-      });
-    },
-  })
-  .subscription('date', {
-    resolve() {
-      return new Subscription<{ date: Date }>(emit => {
-        emit.data({ date: new Date() });
-        return () => {
-          console.log('date closed');
-        };
-      });
-    },
-  });
 
 export const appRouter = createRouter()
   .transformer(superjson)
