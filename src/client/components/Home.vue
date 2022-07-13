@@ -1,24 +1,22 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref } from 'vue';
-import { client, wsClient } from '../lib/trpc';
+import { client, IS_DEV } from '../lib/trpc';
+
+let socket = new WebSocket(IS_DEV ? `ws://localhost:8000/ws` : `wss://${window.location.host}/ws`);
 
 onMounted(async () => {
   try {
     console.log('mounted');
 
-    client.subscription('ws.date', null, {
-      onDone() {
-        console.log('onDone');
-      },
-      onNext(result) {
-        if (result.type === 'data') {
-          console.log('onNext', result.data);
-        }
-      },
-      onError(error) {
-        if (error.message !== 'WebSocket closed prematurely') console.error('onError', error);
-      }
-    });
+    socket.onopen = () => {
+      console.log('open');
+      socket.send(JSON.stringify(new Date()));
+    };
+    socket.onclose = () => console.log('close');
+    socket.onmessage = (e) => {
+      console.log('message', e.data);
+    };
+    socket.onerror = (e) => console.error(e);
 
     const frodo = await client.mutation('user.createUser', { username: 'Frodo', password: 'password' });
     console.log(frodo);
@@ -31,6 +29,7 @@ onMounted(async () => {
 });
 
 onUnmounted(() => {
+  socket.close();
 });
 
 const count = ref(0);

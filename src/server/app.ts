@@ -10,6 +10,7 @@ import { createContext } from './lib/context';
 import { appRouter } from './routes/trpc';
 import { apiRoutes } from './routes/api';
 import { appErrorHandler, appNotFoundHandler } from './routes/default';
+import { wsRoutes } from './routes/ws';
 
 const envOptions = {
   dotenv: true,
@@ -33,10 +34,10 @@ export default (opts?: FastifyServerOptions) => {
   fastify.register(ws, { options: { maxPayload: 1048576 } });
   fastify.register(fastifyTRPCPlugin, {
     prefix: '/trpc',
-    useWSS: true,
     trpcOptions: { router: appRouter, createContext },
   });
   fastify.register(apiRoutes, { prefix: 'api' });
+  fastify.register(wsRoutes, { prefix: 'ws' });
   fastify.setErrorHandler(appErrorHandler);
   fastify.setNotFoundHandler(appNotFoundHandler);
 

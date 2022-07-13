@@ -3,7 +3,6 @@ import { z } from 'zod';
 import superjson from 'superjson';
 import { TRPCError } from '@trpc/server';
 import { User, users, UserSchema } from '../data/data';
-import { wsRoutes } from './ws';
 // import { wsRoutes } from './ws';
 
 const authMiddleware = async ({ ctx, next, meta }: any) => {
@@ -69,8 +68,7 @@ export const appRouter = createRouter()
     return result;
   })
   .merge('user.', userRoutes)
-  .merge('admin.', adminRoutes)
-  .merge('ws.', wsRoutes);
+  .merge('admin.', adminRoutes);
 
 // export type definition of API
 export type AppRouter = typeof appRouter;
