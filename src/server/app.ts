@@ -28,7 +28,6 @@ export default (opts?: FastifyServerOptions) => {
 
   fastify.register(env, envOptions);
   // fastify.register(helmet, { contentSecurityPolicy: false });
-  fastify.register(helmet);
   fastify.register(cors);
   fastify.register(staticFiles, { root: path.join(__dirname, 'public') });
   fastify.register(ws, { options: { maxPayload: 1048576 } });

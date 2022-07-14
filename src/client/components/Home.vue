@@ -4,19 +4,22 @@ import { client, IS_DEV } from '../lib/trpc';
 
 let socket = new WebSocket(IS_DEV ? `ws://localhost:8000/ws` : `wss://${window.location.host}/ws`);
 
+function socketSetup(socket: WebSocket) {
+  socket.onopen = () => {
+    console.log('open');
+    socket.send(JSON.stringify(new Date()));
+  };
+  socket.onclose = () => console.log('close');
+  socket.onmessage = (e) => {
+    console.log('message', e.data);
+  };
+  socket.onerror = (e) => console.error(e);
+}
+
 onMounted(async () => {
   try {
     console.log('mounted');
-
-    socket.onopen = () => {
-      console.log('open');
-      socket.send(JSON.stringify(new Date()));
-    };
-    socket.onclose = () => console.log('close');
-    socket.onmessage = (e) => {
-      console.log('message', e.data);
-    };
-    socket.onerror = (e) => console.error(e);
+    socketSetup(socket);
 
     const frodo = await client.mutation('user.createUser', { username: 'Frodo', password: 'password' });
     console.log(frodo);

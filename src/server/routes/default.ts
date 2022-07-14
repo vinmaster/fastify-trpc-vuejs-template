@@ -3,7 +3,8 @@ import { FastifyError, FastifyReply, FastifyRequest } from 'fastify';
 export function appErrorHandler(error: FastifyError, request: FastifyRequest, reply: FastifyReply) {
   console.error(error);
   let status = error.statusCode ?? 500;
-  reply.status(status).send({
+
+  return reply.status(status).send({
     status,
     error: 'Internal Server Error',
   });
