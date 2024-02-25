@@ -5,9 +5,9 @@ import cors from '@fastify/cors';
 import staticFiles from '@fastify/static';
 import env from '@fastify/env';
 import ws from '@fastify/websocket';
-import { fastifyTRPCPlugin } from '@trpc/server/adapters/fastify';
+import { fastifyTRPCPlugin, FastifyTRPCPluginOptions } from '@trpc/server/adapters/fastify';
 import { createContext } from './lib/context';
-import { appRouter } from './routes/trpc';
+import { AppRouter, appRouter } from './routes/trpc';
 import { apiRoutes } from './routes/api';
 import { appErrorHandler, appNotFoundHandler } from './routes/default';
 import { wsRoutes } from './routes/ws';
@@ -33,7 +33,13 @@ export default (opts?: FastifyServerOptions) => {
   fastify.register(ws, { options: { maxPayload: 1048576 } });
   fastify.register(fastifyTRPCPlugin, {
     prefix: '/trpc',
-    trpcOptions: { router: appRouter, createContext },
+    trpcOptions: {
+      router: appRouter,
+      createContext,
+      onError({ path, error }) {
+        console.error(`Error in tRPC handler on path '${path}':`, error);
+      },
+    } satisfies FastifyTRPCPluginOptions<AppRouter>['trpcOptions'],
   });
   fastify.register(apiRoutes, { prefix: 'api' });
   fastify.register(wsRoutes, { prefix: 'ws' });

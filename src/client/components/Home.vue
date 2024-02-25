@@ -21,10 +21,10 @@ onMounted(async () => {
     console.log('mounted');
     socketSetup(socket);
 
-    const frodo = await client.mutation('user.createUser', { username: 'Frodo', password: 'password' });
+    const frodo = await client.user.createUser.mutate({ username: 'Frodo', password: 'password' });
     console.log(frodo);
 
-    const res = await client.query('user.getUserByUsername', 'Frodo');
+    const res = await client.user.getUserByUsername.query('Frodo');
     console.log(res);
   } catch (error) {
     console.error(error);

@@ -3,10 +3,13 @@
   "compilerOptions": {
     "rootDir": "src/server",
     "outDir": "build",
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
     "resolveJsonModule": true,
-    "target": "esnext",
-    "module": "commonjs",
+    "module": "CommonJS",
+    "target": "ESNext",
+    "lib": [
+      "ESNext"
+    ],
     "noImplicitAny": false,
     "allowSyntheticDefaultImports": true,
     "skipLibCheck": true,
@@ -22,5 +25,7 @@
       ]
     }
   },
-  "include": ["src/server/**/*.ts"],
+  "include": [
+    "src/server/**/*.ts"
+  ],
 }

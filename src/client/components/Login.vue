@@ -1,23 +1,29 @@
 <script setup lang="ts">
 import { ref } from 'vue';
 import { client } from '../lib/trpc';
+import { HttpClient } from '../lib/HttpClient';
 
 const username = ref('');
 const password = ref('');
 
 async function onSubmit() {
   console.log('submit');
-  let res = await client.mutation('user.login', { username: username.value, password: password.value });
+  let res = await client.user.login.mutate({ username: username.value, password: password.value });
   console.log('res', res);
+}
+
+async function date() {
+  let res = await HttpClient.get('/api');
+  console.log(res);
 }
 </script>
 
 <template>
-  <div class="font-sans min-h-screen antialiased bg-gray-800 pt-24 pb-5 text-gray-800">
+  <div class="font-sans min-h-screen antialiased pt-24 pb-5 text-white">
     <div class="flex flex-col justify-center sm:w-96 sm:m-auto mx-5 mb-5 space-y-8">
       <h1 class="font-bold text-center text-4xl text-yellow-500">Login<span class="text-blue-500">Page</span></h1>
       <form @submit.prevent="onSubmit">
-        <div class="flex flex-col bg-white p-10 rounded-lg shadow space-y-6">
+        <div class="flex flex-col bg-gray-500 p-10 rounded-lg shadow space-y-6">
           <h1 class="font-bold text-xl text-center">Sign in to your account</h1>
 
           <div class="flex flex-col space-y-1">
@@ -40,9 +46,11 @@ async function onSubmit() {
           </div>
         </div>
       </form>
+      <button type="button" @click="date"
+        class="bg-blue-500 text-white font-bold px-5 py-2 rounded focus:outline-none shadow hover:bg-blue-700 transition-colors">
+        Date</button>
     </div>
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>
