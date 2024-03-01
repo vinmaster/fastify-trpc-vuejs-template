@@ -17,5 +17,28 @@ export function apiRoutes(fastify: FastifyInstance, opts, done) {
   fastify.get('/error', async (request, reply) => {
     throw new Error('test');
   });
+
+  fastify.post('/echo', async (request, reply) => {
+    return request.body;
+  });
+
+  fastify.post('/fail', async (request, reply) => {
+    let body = request.body as any;
+    if (body.fail) {
+      return reply.code(400).send(body);
+    } else {
+      return body;
+    }
+  });
+
+  fastify.post('/auth', async (request, reply) => {
+    let body = request.body as any;
+    if (body.fail) {
+      return reply.code(401).send(body);
+    } else {
+      return body;
+    }
+  });
+
   done();
 }
